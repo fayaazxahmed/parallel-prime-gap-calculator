@@ -1,13 +1,13 @@
 {
-  "configurations": [
-    {
-      "name": "Mac",
-      "includePath": [
-        "${workspaceFolder}/**",
-        "/opt/homebrew/include"
-      ],
-      "compilerPath": "/opt/homebrew/bin/mpicc"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/homebrew/include"
+            ],
+            "compilerPath": "/opt/homebrew/bin/mpicc"
+        }
+    ],
+    "version": 4
 }

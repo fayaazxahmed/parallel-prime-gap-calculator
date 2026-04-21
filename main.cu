@@ -4,14 +4,14 @@
 #include <stdint.h>
 #include <math.h>
 
-__global__ void sieveKernel(uint8_t* bit_array, uint64_t limit, uint64_t max_num, bool* prime) {
-    int threadId = blockIdx.x * blockDim.x + threadIdx.x;
+__global__ void sieveKernel(bool* is_prime, unsigned long long limit, unsigned long long prime) {
+    // Calculate thread ID and offset between IDs in thread block
+    unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned long long offset = blockDim.x * gridDim.x;
 
-    if (threadId < max) {
-        uint64_t p = primes[tid];
-        // Assume all numbers are prime initially
-        for (uint64_t i = p * p; i <= limit; i += p) {
-            prime[i] = true; 
-        }
-    }
+    unsigned long long start = prime*prime;
+
+    for (unsigned long long i = idx*; i < limit; i += offset) {
+        is_prime[i] = false;
+    }    
 }
