@@ -4,6 +4,16 @@
 #include <stdint.h>
 #include <math.h>
 
+#define CUDA_CHECK(call) \
+do { \
+    cudaError_t err = call; \
+    if (err != cudaSuccess) { \
+        fprintf(stderr, "CUDA error at %s:%d: %s\n", \
+                __FILE__, __LINE__, cudaGetErrorString(err)); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
 __global__ void sieveKernel(bool* is_prime, unsigned long long limit, unsigned long long prime) {
     // Calculate thread ID and offset between IDs in thread block
     unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
