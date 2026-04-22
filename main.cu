@@ -38,9 +38,9 @@ __global__ void sieveKernel(bool* is_prime, unsigned long long limit, unsigned l
     unsigned long long offset = blockDim.x * gridDim.x;
     unsigned long long start = prime*prime;
 
-    for (unsigned long long i = start + idx*prime; i < limit; i += offet*prime) {
+    for (unsigned long long i = start + idx*prime; i < limit; i += offset*prime) {
         is_prime[i] = false;
-    }
+    }    
 }
 
 int main() {
