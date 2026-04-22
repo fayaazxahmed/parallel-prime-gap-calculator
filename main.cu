@@ -14,8 +14,26 @@ do { \
     } \
 } while(0)
 
-__global__ void sieveKernel(bool* is_prime, unsigned long long limit, unsigned long long prime) {
+__global__ void sieveInit(bool* is_prime, unsigned long long limit) {
     // Calculate thread ID and offset between IDs in thread block
+    unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned long long offset = blockDim.x * gridDim.x;
+
+    // Mark 2 and all odd numbers as prime, everything else is initialized as not prime
+    for (unsigned long long i = idx; i < limit; i += offset) {
+        if (i < 2) {
+            is_prime[i] = false;
+        } else if (i == 2) {
+            is_prime[i] = true;
+        } else if (i%2 == 0) {
+            is_prime[i] = false;
+        } else {
+            is_prime[i] = true;
+        }
+    }
+}
+
+__global__ void sieveKernel(bool* is_prime, unsigned long long limit, unsigned long long prime) {
     unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned long long offset = blockDim.x * gridDim.x;
 
