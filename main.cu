@@ -14,7 +14,7 @@ do { \
     } \
 } while(0)
 
-__global__ void sieveInit(bool* is_prime, unsigned long long limit) {
+__global__ void initSieve(bool* is_prime, unsigned long long limit) {
     // Calculate thread ID and offset between IDs in thread block
     unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned long long offset = blockDim.x * gridDim.x;
@@ -39,7 +39,24 @@ __global__ void sieveKernel(bool* is_prime, unsigned long long limit, unsigned l
 
     unsigned long long start = prime*prime;
 
-    for (unsigned long long i = idx*; i < limit; i += offset) {
+    for (unsigned long long i = idx; i < limit; i += offset) {
         is_prime[i] = false;
     }    
+}
+
+int main() {
+    unsigned long long limit = 100;
+    unsigned long long limit_sqrt = sqrt(limit);
+    bool* h_is_prime = (bool*)malloc((limit + 1)*sizeof(bool));
+    bool *d_is_prime;
+    CUDA_CHECK(cudaMalloc(&d_is_prime, (limit + 1) * sizeof(bool)));
+    
+    initSieve<<<10, 10>>>(d_is_prime, limit);
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    // Check initialized prime values (0 or 1)
+    CUDA_CHECK(cudaMemcpy(h_is_prime, d_is_prime, (limit + 1) * sizeof(bool), cudaMemcpyDeviceToHost));
+    for (int i = 0; i < limit + 1; i++) {
+        printf("%d: %d\n", i, h_is_prime[i]);
+    }
 }
