@@ -103,4 +103,14 @@ int main() {
     CUDA_CHECK(cudaMemcpy(h_count, d_count, sizeof(int), cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaDeviceSynchronize());
     printf("Number of primes: %d\n", *h_count);
+
+    unsigned long long* h_max_diff = (unsigned long long*)malloc(sizeof(unsigned long long));
+    unsigned long long* d_max_diff;
+    CUDA_CHECK(cudaMalloc(&d_max_diff, sizeof(unsigned long long)));
+    CUDA_CHECK(cudaMemset(d_max_diff, 0, sizeof(unsigned long long)));
+    calculateMaxPrimeDifference<<<1, 1>>>(d_is_prime, limit, d_max_diff);
+    CUDA_CHECK(cudaDeviceSynchronize());
+    CUDA_CHECK(cudaMemcpy(h_max_diff, d_max_diff, sizeof(unsigned long long), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaDeviceSynchronize());
+    printf("Maximum gap between primes: %d\n", *h_max_diff);
 }
