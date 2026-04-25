@@ -52,6 +52,28 @@ __global__ void getPrimeCount(bool* is_prime, unsigned long long limit, int* cou
     }
 }
 
+__global__ void calculateMaxPrimeDifference(bool* is_prime, unsigned long long limit, unsigned long long* max_diff_global) {
+    unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned long long offset = blockDim.x * gridDim.x;
+    unsigned long long local_max_diff = 0;
+    unsigned long long local_prev_prime = 0;
+    bool local_first_prime_found = false;
+
+    for (unsigned long long i = idx; i < limit; i += offset) {
+        if (is_prime[i]) {
+            if (local_first_prime_found) {
+                unsigned long long check_diff = i - local_prev_prime;
+                if (check_diff > local_max_diff) local_max_diff = check_diff;
+            } else {
+                local_first_prime_found = true;
+            }
+            local_prev_prime = i;
+        }
+    }
+
+    if (local_max_diff > 0) atomicMax(max_diff_global, local_max_diff);
+}
+
 int main() {
     unsigned long long limit = 1000000000;
     unsigned long long limit_sqrt = sqrt(limit);
